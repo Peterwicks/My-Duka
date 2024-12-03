@@ -23,4 +23,10 @@ def theproducts():
     print(theproducts)
     return render_template("theproducts.html", myproducts=theproducts)
 
+@app.route("/thesales")
+def thesales():
+    cur.execute("select * FROM thesales")
+    thesales=cur.fetchall()
+    return render_template("thesales.html", mysales=thesales)
+
 app.run()
