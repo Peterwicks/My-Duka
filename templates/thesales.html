@@ -1,31 +1,47 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <link rel="stylesheet" href="//cdn.datatables.net/2.1.8/css/dataTables.dataTables.min.css">
 </head>
+
 <body>
     <h1>The Sales</h1>
-    <table>
+    <table id="myTable">
         <thead>
             <tr>
-                <th>id</th>
-                <th>pid</th>
-                <th>Quantity</th>
-                <th>Created_at</th>
-            </tr> 
+                <th>Sales ID</th>
+                <th>Product Name</th>
+                <th>Sales Quantity</th>
+                <th>Time of Sales</th>
+            </tr>
         </thead>
         <tbody>
-            {%for s in mysales%}
+            {% for s in thesales %}
             <tr>
-                <td>{{ s[0]}} </td>
+                <td>{{s[0]}}</td>
                 <td>{{s[1]}}</td>
                 <td>{{s[2]}}</td>
-                <td>{{s[3]}}</td>
+                <td>
+                    {% if s[3] != None %}
+                    {{s[3] | strftime("%B %d, %Y")}}
+                    {% else %}
+                    time not available
+                    {% endif %}
+                </td>
             </tr>
-            {%endfor%}
+            {% endfor %}
         </tbody>
     </table>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.js"></script>
+    <script src="//cdn.datatables.net/2.1.8/js/dataTables.min.js"></script>
+    <script>
+        let table = new DataTable('#myTable');
+    </script>
 </body>
+
 </html>
