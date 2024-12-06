@@ -36,6 +36,7 @@ def theproducts():
         selling_price=request.form["SP"]
         stock_quantity=request.form["ST"]
         print(name, buying_price, selling_price, stock_quantity)
+        return "product added successfully"
 
 @app.route("/thesales")
 def thesales():
