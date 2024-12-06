@@ -1,5 +1,5 @@
-from flask import Flask, render_template, request
-from database import cur
+from flask import Flask, render_template, request, redirect
+from database import conn, cur
 from datetime import datetime
 
 
@@ -27,8 +27,9 @@ def contact():
 def theproducts():
     cur.execute("select * FROM theproducts")
     if request.method=="GET":
+        cur.execute("SELECT *FROM theproducts order by id desc")
         theproducts = cur.fetchall()
-    #print(theproducts)
+        print(theproducts)
         return render_template("theproducts.html", myproducts=theproducts)
     else:
         name=request.form["pname"]
@@ -36,7 +37,14 @@ def theproducts():
         selling_price=request.form["SP"]
         stock_quantity=request.form["ST"]
         print(name, buying_price, selling_price, stock_quantity)
-        return "product added successfully"
+        if selling_price < buying_price:
+            return "Selling price should be greater than buying price"
+        query="insert into theproducts(name,buying_price,selling_price,stock_quantity) "\
+        "values('{}',{},{},{})".format(name,buying_price,selling_price,stock_quantity)
+        cur.execute(query)
+        conn.commit()
+        return redirect("/theproducts")
+    
 
 @app.route("/thesales")
 def thesales():

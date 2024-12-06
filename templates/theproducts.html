@@ -10,30 +10,18 @@
   
 
 <body>
-   <!-- Button trigger modal -->
+
     <h1>Add Product</h1>
-<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
- 
-  </button>
-  
 
             <form action="/theproducts" method="post">
                 
-                  <label for="exampleInputEmail1" class="form-label">Name</label>
+                  <label for="exampleInputEmail1" >Name</label>
                   <input type="text"  id="exampleInputEmail1" aria-describedby="emailHelp" name = "pname">
-                
-                
-                
-                  <label for="exampleInputPassword1" class="form-label">Buying Price</label>
-                  <input type="number"  id="exampleInputPassword1" name="BP">
-              
-                
-                    <label for="exampleInputPassword1" class="form-label">Selling Price</label>
+                  <label for="exampleInputPassword1" >Buying Price</label>
+                  <input type="number"  id="exampleInputPassword1" name="BP">     
+                    <label for="exampleInputPassword1" >Selling Price</label>
                     <input type="number"  id="exampleInputPassword1" name =SP>
-                
-
-                  
-                    <label for="exampleInputPassword1" class="form-label">Stock Quantity</label>
+                    <label for="exampleInputPassword1" >Stock Quantity</label>
                     <input type="number"  id="exampleInputPassword1" name =ST>
            
                 <button type="submit" class="btn btn-primary">Submit</button>
@@ -66,8 +54,13 @@
     </table>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.js"></script>
     <script src="//cdn.datatables.net/2.1.8/js/dataTables.min.js"></script>
-    <script>
-        let table = new DataTable('#myTable');
+        <script>
+      $(document).ready(function () {
+            $('#myTable').DataTable({
+                "order": [[0, "desc"]] // Order by the first column (index 0) in descending order
+            });
+        });
+    </script>
     </script>
     
 
