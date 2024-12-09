@@ -46,12 +46,23 @@ def theproducts():
         return redirect("/theproducts")
     
 
-@app.route("/thesales")
+@app.route("/thesales", methods=["GET", "POST"])
 def thesales():
-    cur.execute("select thesales.id, theproducts.name, thesales.quantity, thesales.created_at FROM thesales join theproducts on theproducts.id=thesales.pid")
-   
-    thesales=cur.fetchall()
-    print(thesales)
-    return render_template("thesales.html", thesales=thesales, theproducts=cur.fetchall())
+    if request.method=="POST":
+        pid = request.form["pid"]
+        amount = request.form["amount"]
+        print(pid, amount)
+        query_1= "insert into thesales(pid,quantity, created_at)" \
+            "values('{}',{}, {})".format(pid,amount, 'now()')
+        cur.execute(query_1)
+        return redirect("thesales")
+    
+    else:
+        cur.execute("select * from theproducts")
+        theproducts= cur.fetchall()
+        cur.execute("select thesales.id, theproducts.name, thesales.quantity, thesales.created_at FROM thesales join theproducts on theproducts.id=thesales.pid")
+        thesales=cur.fetchall()
+        
+        return render_template("thesales.html", theproducts=theproducts, thesales=thesales)
 
 app.run(debug=True)

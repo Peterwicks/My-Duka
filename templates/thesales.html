@@ -11,6 +11,21 @@
 
 <body>
     <h1>The Sales</h1>
+    <form action="/thesales" method="POST">
+        <label for="">Product ID</label>
+        <select name="pid">
+            {% for p in theproducts %}
+                <option value="{{p[0]}}">{{p[1]}}</option>
+            {% endfor %}
+        </select> 
+
+        <label for="">Amount</label>
+        <input type="text" name="amount">
+        <input type="submit" value ="Submit">
+    </form>
+
+
+
     <table id="myTable">
         <thead>
             <tr>
