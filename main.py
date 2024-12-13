@@ -1,10 +1,20 @@
-from flask import Flask, render_template, request, redirect
+from flask import Flask, render_template, request, redirect, session
 from database import conn, cur
 from datetime import datetime
+from functools import wraps
 
 
 app= Flask(__name__)
-
+#Decorator function is used to give a function or route more functionality
+#It runs before the route function is processed.
+app.secret_key="MyDuka123"
+def login_required(f):
+    @wraps(f)
+    def protected(*args, **kwargs):
+        if 'email' in session:
+            return f(*args, **kwargs)      
+        return redirect("/login")
+    return protected
 # Define a custom filter- this will be used to format the date(should be done after importing datetime)
 @app.template_filter('strftime')
 def format_datetime(value, format="%B %d, %Y"):
@@ -24,6 +34,7 @@ def contact():
     return "This is where the contact statement should display"
 
 @app.route("/theproducts", methods=["GET", "POST"])
+@login_required
 def theproducts():
     cur.execute("select * FROM theproducts")
     if request.method=="GET":
@@ -47,6 +58,7 @@ def theproducts():
     
 
 @app.route("/thesales", methods=["GET", "POST"])
+@login_required
 def thesales():
     if request.method=="POST":
         pid = request.form["pid"]
@@ -60,12 +72,13 @@ def thesales():
     else:
         cur.execute("select * from theproducts")
         theproducts= cur.fetchall()
-        cur.execute("select thesales.id, theproducts.name, thesales.quantity, thesales.created_at"\
+        cur.execute("select thesales.id, theproducts.name, thesales.quantity, thesales.created_at "\
                      "FROM thesales join theproducts on theproducts.id=thesales.pid")
         thesales=cur.fetchall()
         
         return render_template("thesales.html", theproducts=theproducts, thesales=thesales)
 @app.route("/dashboard")
+@login_required
 def dashboard():
     cur.execute("select sum(p.selling_price * s.quantity) as sales,"\
                 "s.created_at from thesales as s join theproducts as p on p.id =s.pid group by s.created_at;")
@@ -85,17 +98,26 @@ def dashboard():
 def dashboard_2(): 
     cur.execute("select name as product_name, SUM(selling_price) AS total_sales from theproducts group by name ")
     sales_per_product =cur.fetchall()
-    
-    
+
     x=[s[0] for s in sales_per_product]
     y=[float(s[1]) for s in sales_per_product]
     for s in sales_per_product:
         return render_template("dashboard_2.html", x=x, y=y)
     
-@app.route("/login")
+@app.route("/login", methods=["GET", "POST"])
 def login():
-
-    return render_template("login.html")
+    if request.method=="POST":
+        email=request.form["Email"]
+        password=request.form["Password"]
+        cur.execute("select id from users where email ='{}' and password = '{}'".format(email,password))
+        row=cur.fetchone()
+        if row == None:
+            return "Invalid Email or Password"
+        else:
+            session["email"]=email
+            return redirect("/dashboard")
+    else:
+        return render_template("login.html")
 
 @app.route("/register", methods=["GET", "POST"])
 def register():
@@ -109,6 +131,12 @@ def register():
         cur.execute(query)
         conn.commit()
         return redirect ("/dashboard")
+
+@app.route("/logout", methods=["GET", "POST"])
+def logout():
+    session.pop ('email')
+    session.clear()
+    return redirect ("/login")
 
 
 app.run(debug=True)
